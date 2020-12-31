@@ -26,11 +26,11 @@ public class MyTest {
           如果此int型数值超过了k的类型范围 就直接报错了
         */
         System.out.println("========整型和char========");
-        byte a=127;  //127 byte的最大值   byte a=128;直接报错 因为这个int128 隐式转不了byte
-        short b=127;
+        byte a=127;  //int->byte 127 byte的最大值   byte a=128;直接报错 因为这个int128 隐式转不了byte
+        short b=127; //int->short
         int c=127;
         long d=127L;//或者12 会隐式转换 int->long
-        char c1=127;
+        char c1=127; //int->char
         System.out.println(a==b);//true
         System.out.println(b==c);//true
         System.out.println(c==d);//true
