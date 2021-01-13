@@ -43,14 +43,12 @@ public class Provider {
             providerConfig.setTimeout(1000);
             return providerConfig;
         }
-
         @Bean
         public ApplicationConfig applicationConfig() {
             ApplicationConfig applicationConfig = new ApplicationConfig();
             applicationConfig.setName("busi-provider");
             return applicationConfig;
         }
-
         @Bean
         public RegistryConfig registryConfig() {
             RegistryConfig registryConfig = new RegistryConfig();
@@ -59,7 +57,6 @@ public class Provider {
             registryConfig.setPort(2181);
             return registryConfig;
         }
-
         @Bean
         public ProtocolConfig protocolConfig() {
             ProtocolConfig protocolConfig = new ProtocolConfig();
