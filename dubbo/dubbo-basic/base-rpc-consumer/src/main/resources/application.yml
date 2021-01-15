@@ -1,0 +1,12 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: bank-james
+
+zookeeper:
+  url: zookeeper://192.168.0.128:2181
+dubbo:
+  name: bank-james
+  port: 20880
+

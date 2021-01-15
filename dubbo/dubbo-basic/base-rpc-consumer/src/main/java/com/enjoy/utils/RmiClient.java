@@ -46,7 +46,6 @@ public class RmiClient {
      */
     public static OrderService getService(final InfoService infoService){
         OrderService service = new OrderService(){
-
             @Override
             public OrderEntiry getDetail(String id) {
                 Map<String,String> info = new HashMap();
@@ -54,7 +53,6 @@ public class RmiClient {
                 info.put("target","orderService");//对象
                 info.put("methodName","getDetail");//方法
                 info.put("arg",id);//参数
-
                 OrderEntiry result = null;
                 try {
                     result = (OrderEntiry)infoService.passInfo(info);
@@ -66,6 +64,4 @@ public class RmiClient {
         };
         return service;
     }
-
-
 }
