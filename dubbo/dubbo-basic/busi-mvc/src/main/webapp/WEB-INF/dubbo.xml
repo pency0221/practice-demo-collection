@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans.xsd
+	      http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	 http://code.alibabatech.com/schema/dubbo
+	 http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="busi-mvc">
+        <!--qos是Dubbo的在线运维命令-->
+        <!--是否启动QoS，默认是true-->
+        <dubbo:parameter key="qos.enable" value="false" />
+        <!--是否允许远程访问，默认false-->
+        <dubbo:parameter key="qos.accept.foreign.ip" value="false" />
+        <!--启动QoS绑定的端口，默认22222-->
+        <dubbo:parameter key="qos.port" value="33333" />
+    </dubbo:application>
+    <!--注册中心地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" />
+
+    <!--name指示使用什么协议：dubbo/rmi/rest-->
+    <dubbo:protocol id="d1"  name="dubbo" port="20881" />
+
+    <!--全局配置-->
+    <!--pency:负载均衡策略roundRobin轮训 retries重试5次（不包含首次调用本事） 缓存结果策略lru 即缓存空间固定 缓存活跃结果 空间不够就删除不活跃的
+    loadbalance 共三个值可选：随机random 轮训roundrobin 最小活跃数leastaction
+    -->
+    <dubbo:provider loadbalance="roundrobin" timeout="1000" retries="5" cache="lru"/>
+                                                    <!--check="false" -->
+                                                    <!--retries="2" cluster="failover"-->
+                                                    <!--loadbalance="roundrobin"-->
+                                                    <!--cache="lru"-->
+                                                    <!--group="group2"-->
+                                                    <!--version="1.0"-->
+    <!--pency:属性有继承关系 即有些属性可以设置到上层组件配置中 主要用处在provider/consumer和service/reference中
+    在provider/consumer配置了全局属性 在多个service/reference中就不用一个个配置了-->
+    <dubbo:consumer timeout="1000" group="test"/>
+
+
+    <!--pency:timeout业务属性漫游到消费方 3秒没响应  调用这个服务的消费方就中断等待相应 （默认会换机器再路由调用重试2次  retries决定）-->
+    <dubbo:service interface="com.enjoy.service.OrderService" ref="orderService" timeout="3000"/>
+    <dubbo:service interface="com.enjoy.service.PayService" ref="payService" />
+    <dubbo:service interface="com.enjoy.service.UserService" ref="userService" />
+    <dubbo:service interface="com.enjoy.service.ErrorService" ref="errorService" />
+    <dubbo:service interface="com.enjoy.service.UnknownService" ref="unknownService" />
+    <!--pency：checkout="false" 关闭启动检查 即使productService没有提供者 启动时也不报错 正常启动起来-->
+    <dubbo:reference id="productService" interface="com.enjoy.service.ProductService" check="false"/>
+
+
+</beans>
