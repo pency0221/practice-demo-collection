@@ -52,10 +52,9 @@
     <!--整个接口 所有的方法都是异步调用-->
     <dubbo:reference  id="payService" interface="com.enjoy.service.PayService" async="true" />
 
-    <!--回调-->
+    <!--事件通知 调用前回调oninvoke 返回后回调onreturn 抛出异常回调onthrow-->
     <dubbo:reference  id="errorService" interface="com.enjoy.service.ErrorService" >
-        <dubbo:method name="doSomeThing"
-                      onreturn="callBack.onSuccess" onthrow="callBack.onError"/>
+        <dubbo:method name="doSomeThing" onreturn="callBack.onSuccess" onthrow="callBack.onError"/>
     </dubbo:reference>
 
 

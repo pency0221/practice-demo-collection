@@ -77,14 +77,14 @@ public class IndexController {
         return "/async";
     }
 
-   /* *//**
+    /**
      * 事件通知
-     *//*
+     */
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     @ResponseBody
     public String error(HttpServletRequest request, HttpServletResponse response){
         String msg = errorService.doSomeThing("测试业务稳定性");
         return "complete:"+msg;
-    }*/
+    }
 
 }
