@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans.xsd
+	      http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	 http://code.alibabatech.com/schema/dubbo
+	 http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--全局配置-->
+    <dubbo:provider timeout="3000"/>
+    <!-- 服务提供方应用名称, 方便用于依赖跟踪 -->
+    <dubbo:application name="busi-server" />
+    <!-- 使用本地zookeeper作为注册中心 -->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" />
+
+    <!--name指示使用什么协议监听端口：dubbo/rmi/rest-->
+    <dubbo:protocol id="d1"  name="dubbo" port="20880" />
+    <dubbo:protocol id="d2"  name="dubbo" port="20882" />
+
+    <!-- 声明服务暴露的接口，并暴露服务 -->
+    <dubbo:service interface="com.enjoy.service.OrderService" ref="orderService" protocol="d1" />
+    <!-- 通过xml方式配置为bean, 让spring托管和实例化 -->
+    <bean id="orderService" class="com.enjoy.service.OrderServiceImpl"/>
+
+</beans>

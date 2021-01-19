@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans.xsd
+	      http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	 http://code.alibabatech.com/schema/dubbo
+	 http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="busi-mall">
+        <!--qos是Dubbo的在线运维命令-->
+        <!--是否启动QoS，默认是true-->
+        <dubbo:parameter key="qos.enable" value="false" />
+        <!--是否允许远程访问，默认false-->
+        <dubbo:parameter key="qos.accept.foreign.ip" value="false" />
+        <!--启动QoS绑定的端口，默认22222-->
+        <dubbo:parameter key="qos.port" value="22222" />
+    </dubbo:application>
+    <!--注册中心地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" />
+
+    <!--name指示使用什么协议：dubbo/rmi/rest-->
+    <dubbo:protocol id="d1"  name="dubbo" port="20880" />
+
+    <!--全局配置-->
+    <dubbo:provider timeout="3000" />
+    <dubbo:consumer timeout="1000" check="false"/>
+
+    <dubbo:reference id="orderService" interface="com.enjoy.service.OrderService"/>
+    <dubbo:reference  id="userService" interface="com.enjoy.service.UserService"/>
+    <dubbo:reference  id="payService" interface="com.enjoy.service.PayService" />
+    <dubbo:reference  id="errorService" interface="com.enjoy.service.ErrorService" />
+
+    <!--泛化调用-->
+    <dubbo:reference id="unknownService" interface="com.enjoy.service.UnknownService" generic="true" />
+
+
+</beans>
