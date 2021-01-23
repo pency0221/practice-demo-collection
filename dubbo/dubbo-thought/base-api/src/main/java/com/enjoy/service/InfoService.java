@@ -20,6 +20,8 @@ import java.util.Map;
  *
  * 	只有标注了SPI注解的接口，才是Dubbo的菜
  */
+@SPI("b")  //标注此接口是dubbo spi扩展接口，并默认实现b
 public interface InfoService {
 	Object sayHello(String name) ;
+	Object passInfo(String msg, URL url) ;
 }
