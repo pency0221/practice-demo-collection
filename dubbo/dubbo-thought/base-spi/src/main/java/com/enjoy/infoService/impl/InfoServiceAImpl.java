@@ -3,6 +3,7 @@ package com.enjoy.infoService.impl;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.common.extension.Adaptive;
 import com.enjoy.service.InfoService;
 
 public class InfoServiceAImpl implements InfoService {
@@ -12,7 +13,6 @@ public class InfoServiceAImpl implements InfoService {
         System.out.println(name+",你好，调通了A实现！");
         return name+",你好，调通了A实现！";
     }
-
     @Override
     public Object passInfo(String msg, URL url) {
         System.out.println("恭喜你，调通了A实现");
