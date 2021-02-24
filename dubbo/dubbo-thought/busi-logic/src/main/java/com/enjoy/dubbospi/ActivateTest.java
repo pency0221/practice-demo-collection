@@ -24,15 +24,15 @@ import java.util.List;
 public class ActivateTest {
 
     /**
-     * 调用分组为peter过滤器   FilterC、FilterD被调用
-     * （FilterE虽然也是peter分组 但不满足URL中有key为test5的参数）
+     * 调用分组为pency过滤器   FilterC、FilterD被调用
+     * （FilterE虽然也是pency分组 但不满足URL中有key为test5的参数）
      */
     @Test
     public void testActivate1() {
         ExtensionLoader<Filter> extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
 
         URL url = URL.valueOf("test://localhost/user"); //url 理解调用rpc服务的url 只有这个是变化的
-        List<Filter> list=extensionLoader.getActivateExtension(url,"", "peter");//group
+        List<Filter> list=extensionLoader.getActivateExtension(url,"", "pency");//group
         for (Filter filter:list){
             filter.invoke(null,null);
         }
@@ -54,7 +54,7 @@ public class ActivateTest {
     }
 
     /**
-     * 分组为peter
+     * 分组为pency
      * url中有参数test5
      * url中指定要使用a,去除c实现
      * 结果：原本是 cde  又+了A -了c  所以最后 ade
@@ -64,11 +64,12 @@ public class ActivateTest {
         ExtensionLoader extensionLoader = ExtensionLoader.getExtensionLoader(Filter.class);
 
         URL url = URL.valueOf("test://localhost/test");
-        url = url.addParameter("test5", "qqqq"); //这个url里有key为test5的参数 所已满足e的过滤条件
+        url = url.addParameter("test5", "qqqq"); //value
         url = url.addParameter("myfilter", "a,-c");
-        // 第二个参数传入的是url包含的一个参数的key 是手动扩展激活规则 -代表剔除
-        // myfilter这里的规则表示 加上a 剔除c。  a c就是配置文件中的key
-        List<Filter> list = extensionLoader.getActivateExtension(url,"myfilter","peter");
+        //getActivateExtension(URL url, String key, String group)
+        // key是传入的是url中包含的一个参数 在符合规则的实现类基础上再按key对应value再扩展激活规则 -代表剔除  myfilter这里的规则表示 加上a 剔除c。a c就是配置文件中的key
+        List<Filter> list = extensionLoader.getActivateExtension(url,"myfilter","pency");
+        // 一个符合规则的实现类上注解示例： @Activate(group = {"pency","XXX"},order = 1,value = "test5")
         for (Filter filter:list){
             filter.invoke(null,null);
         }

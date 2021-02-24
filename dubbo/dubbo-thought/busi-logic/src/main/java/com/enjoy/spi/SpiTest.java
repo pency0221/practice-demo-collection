@@ -25,7 +25,7 @@ public class SpiTest {
     /**
      * dubbo spi类加载验证
      * extensionLoader.getExtension("a") ---------- 取到对应的扩展类
-     * extensionLoader.getDefaultExtension() ------ 取得SPI（"peter"）指定的实现类
+     * extensionLoader.getDefaultExtension() ------ 取得SPI（"pency"）指定的实现类
      */
     @Test
     public void dubboSPI() {
@@ -37,6 +37,6 @@ public class SpiTest {
 
         //取得b拓展类   getDefaultExtension取得默认扩展实现
         InfoService infoServiceB = extensionLoader.getDefaultExtension();
-        infoServiceB.sayHello("peter");
+        infoServiceB.sayHello("pency");
     }
 }
