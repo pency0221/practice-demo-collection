@@ -3,8 +3,8 @@ package com.enjoy.infoService.impl;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.common.extension.Adaptive;
 import com.enjoy.service.InfoService;
-
 public class InfoServiceBImpl implements InfoService {
 
     @Override
