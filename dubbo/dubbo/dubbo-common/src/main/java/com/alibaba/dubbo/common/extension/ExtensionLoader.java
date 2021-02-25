@@ -94,7 +94,7 @@ public class ExtensionLoader<T> {
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
 
     private ExtensionLoader(Class<?> type) {
-        this.type = type;
+        this.type = type;    //#A   创建ExtensionLoader时 使用type指定这个是哪个接口的ExtensionLoader。 获取ExtensionFactory的最佳适配类赋值objectFactory，ExtensionFactory本身就是一个SPI的扩展接口
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
 
@@ -102,7 +102,7 @@ public class ExtensionLoader<T> {
         return type.isAnnotationPresent(SPI.class);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")     //pency#A
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null)
             throw new IllegalArgumentException("Extension type == null");
@@ -113,9 +113,11 @@ public class ExtensionLoader<T> {
             throw new IllegalArgumentException("Extension type(" + type +
                     ") is not extension, because WITHOUT @" + SPI.class.getSimpleName() + " Annotation!");
         }
-
+        //#A 先缓存里取 ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap();
         ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         if (loader == null) {
+            //取不到 第一次调用时就new ExtensionLoader(type)创建对应接口类型的扩展加载器 放到EXTENSION_LOADERS缓存map中
+                                                    //#A->
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
             loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
         }
