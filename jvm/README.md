@@ -24,6 +24,40 @@
 开启标量替换（允许对象根据属性打散分配到栈上） ：(-XX:+EliminateAllocations)  
 
 
+###对象优先在 Eden 区分配  
+大多数情况下，对象在新生代 Eden 区中分配。当 Eden 区没有足够空间分配时，虚拟机将发起 Minor GC。存活对象通过复制算法复制到新生代的两个 Survivor区（Form/To区）。
+###大对象直接进入老年代
+HotSpot 虚拟机提供了-XX:PretenureSizeThreshold 参数，指定大于该设置值的对象直接在老年代分配。
+这样做的目的 （好处）：
+> 1.避免提前进行Minor GC，明明Eden区内存有空间进行分配(只是没有满足大对象所需的连续空间)。  
+  2.避免在 Eden 区及两个 Survivor区之间来回复制大对象，产生大量的内存复制操作。
 
+XX:PretenureSizeThreshold 的意思是超过这个值的时候，对象直接在old区分配内存, 默认值是0，意思是不管多大优先在eden中分配内存，如果因为最大连续空间不足于分配这个对象导致eden区无法分配时 不提前进行MinorGc 再直接把这个对象分配到老年代。
+PretenureSizeThreshold 参数只对 Serial 和 ParNew 两款收集器有效。如:-XX:PretenureSizeThreshold=4m (就算Eden有超过4m的连续空间 这大于4m的对象也直接到老年代分配去)
+
+###长期存活对象进入老年区
+虚拟机给每个对象定义了一个对象年龄(Age)计数器，存储在对象头中。  
+如果对象在 Eden 出生并经过第一次 Minor GC 后仍然存活，并且能被 Survivor 容纳的话，将被移动到 Survivor 空间中，并将对象年龄设为 1，对象在 Survivor
+区中每熬过一次 Minor GC，年龄就增加 1，当它的年龄增加到一定程度(并发的垃圾回收器默认为 15),CMS 是 6 时还在存活，就会被晋升到老年代中。  
+可以通过参数-XX:MaxTenuringThreshold 调整进入老年代的晋升年龄，默认值也是最大值是15 因为底层是用一个4位的二进制表示的 最大值15
+
+###对象年龄动态判定
+虚拟机并不是永远地要求对象的年龄必须达到了 MaxTenuringThreshold 才能晋升老年代
+如果在 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间（其中一个From/TO）的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到 MaxTenuringThreshold 中要求的年龄。
+
+###空间分配担保
+每次Minor GC前虚拟机都会先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果这个条件成立，那么 Minor GC 可以确保是安全的（即使新生代所有对象都存活 移到老年代空间也够）放心进行Minor Gc 。   
+如果不成立（有几率空间不够），则虚拟机会查看 HandlePromotionFailure 设置值是否允许担保失败（是否允许冒险 不允许冒险那么这次Minor GC就直接升级Full GC）。如果允许，那么会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果小于
+就升级为Full GC。如果大于（说明根据以往经验数据 大概率可以够用），将尝试着进行一次 Minor GC，尽管这次 Minor GC 是有风险的，如果成功了就成功了 但如果Minor GC失败了（这次Minor GC真正进行时发现需要移到老年代的对象比平常多，老年代连续空间存不下）则最终还是升级为了Full GC；
+
+Full GC=新生代（Minor GC）+老年代（Old GC）+方法区GC。  
+
+###对象的分配策略总结  
+默认参数设置情况下：先经过逃逸分析不可逃逸的对象在栈上分配  
+大部分的对象优先在 Eden 区分配（这里包括分配缓冲TLAB）  
+如果是大对象直接进入老年代分配    判断大对象标准：PretenureSizeThreshold   
+多次MinorGC后还长期存活年龄到达MaxTenuringThreshold的对象进入老年区  
+对象年龄动态判定（即使对象年龄没有到达MaxTenuringThreshold但同龄对象内存超过了survivor空间之一的一半 那么>=这个年龄的对象也晋升到老年代）  
+空间分配担保（Minor GC时对老年代空间的检查 必要时升级为Full GC）  
 
 
